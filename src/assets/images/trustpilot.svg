@@ -1,0 +1,9 @@
+<svg width="200" height="50" viewBox="0 0 200 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Star -->
+  <polygon points="25,1 30,18 48,18 33,29 38,46 25,36 12,46 17,29 2,18 20,18" fill="#28CCAE"/>
+  
+  <!-- Trustpilot Text -->
+  <text x="60" y="35" font-family="Arial, sans-serif" font-size="28" fill="#222222">
+    Trustpilot
+  </text>
+</svg>

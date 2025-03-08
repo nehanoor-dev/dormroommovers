@@ -10,10 +10,10 @@ const schoolStore = useSchoolStore();
 <template>
     <div class="bg-header" :class="{'bg-header-school': schoolStore.selectedSchool !== ''}">
         <div class="overlay">
-        <div v-if="schoolStore.selectedSchool !== ''" class="header-inner" :class="{'header-inner-mob': deviceStore.isMobile}">
+        <div v-if="schoolStore.selectedSchool == ''" class="header-inner" :class="{'header-inner-mob': deviceStore.isMobile}">
             <p>MOVING + <br>STORAGE +<br>SHIPPING</p>
         </div>
-        <div v-else>
+        <div v-else class="header-inner-other">
             <p>MOVING + <br>STORAGE +<br>SHIPPING FOR<br><span>{{ schoolStore.selectedSchool }}</span></p>
         </div>
         <div class="d-flex justify-content-center align-items-center">
@@ -28,25 +28,11 @@ const schoolStore = useSchoolStore();
         </div>
         </div>
     </div>
-    <div class="container-fluid py-4 py-lg-5 px-4 stats-sec">
-        <div class="text-center">
-            <h2 class="ml-3 fw-bold">100K+</h2>
-            <h5 class="fw-light">Students<br>Served</h5>
-        </div>
-        <div class="text-center">
-            <h2 class="ml-5 fw-bold">500K+</h2>
-            <h5 class="fw-light">Items<br>Stored</h5>
-        </div>
-        <div class="text-center">
-            <h2 class="fw-bold">2007</h2>
-            <h5 class="fw-light">Moving<br>Since</h5>
-        </div>
-    </div>
 </template>
 <style scoped>
 .bg-header {
     background-image: url('./../../assets/images/bg-top-banner.avif');
-    height: 100vh;
+    height: 80vh;
     width: 100%;
     background-position: center;
     background-repeat: no-repeat;
@@ -71,9 +57,20 @@ const schoolStore = useSchoolStore();
     left: 100px;
     line-height: 5rem;
 }
+.header-inner-other {
+    color: var(--light-text-color);
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    font-size: 4rem;
+    font-weight: 700;
+    top: 70px;
+    left: 100px;
+    line-height: 4rem;
+}
 .header-btn {
     position: absolute;
-    bottom: 160px;
+    bottom: 80px;
     font-size: (1.325rem + .9vw)!important;
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
@@ -86,14 +83,7 @@ const schoolStore = useSchoolStore();
     color: var(--light-text-color);
     bottom: 10px;
 }
-.stats-sec {
-    background-color: var(--secondary-color);
-    color: var(--light-text-color);
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    gap: 90px;
-}
+
 .fw-bold {
     font-weight: 700;
 }

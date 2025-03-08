@@ -63,7 +63,7 @@
     >
       <div>
         <img
-          v-if="useSchoolStore.selectedSchool == ''"
+          v-if="schoolStore.selectedSchool == ''"
           :src="bg2"
           alt="bg"
           width="426"
@@ -115,7 +115,7 @@
       </div>
       <div>
         <img
-          v-if="useSchoolStore.selectedSchool == ''"
+          v-if="schoolStore.selectedSchool == ''"
           :src="bg3"
           alt="bg"
           width="482"

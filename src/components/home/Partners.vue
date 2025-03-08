@@ -19,7 +19,7 @@ const logos = ref([
 ]);
 </script>
 
-<template>
+<template class="bg-color">
   <div class="slider-container">
     <div class="slider">
       <div class="slide" v-for="(logo, index) in logos" :key="index">
@@ -34,12 +34,15 @@ const logos = ref([
 </template>
 
 <style scoped>
+.bg-color {
+  color: rgb(225, 224, 224);
+}
 .slider-container {
   overflow: hidden;
   white-space: nowrap;
   position: relative;
   width: 100%;
-  background: #f8f8f8;
+  background: rgb(225, 224, 224);
   padding: 10px 0;
   height: 180px;
 }
@@ -48,18 +51,20 @@ const logos = ref([
   display: flex;
   gap: 20px;
   animation: scroll 15s linear infinite;
-  background: #f8f8f8;
+  background: rgb(225, 224, 224);
+  align-items: center;
 }
 
 .slide {
   flex: 0 0 auto;
+  
 }
 
 .slide img {
-  height: 100px;
+  height: 120px;
   width: auto;
-  margin-top: 20px;
-  padding: 5px;
+  padding: 20px;
+  border-radius: 15px;
 }
 
 /* Animation for smooth continuous scrolling */
@@ -70,5 +75,13 @@ const logos = ref([
   to {
     transform: translateX(-100%);
   }
+}
+
+img {
+  filter: grayscale(100%);
+  background-color: white;
+}
+img:hover {
+  filter: grayscale(0%);
 }
 </style>

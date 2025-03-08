@@ -1,7 +1,10 @@
-<script setup></script>
+<script setup>
+import bg from './../../assets/images/aaron_slim.webp';
+</script>
 
 <template>
     <div class="help-container">
+        <img :src="bg" alt="bg" class="help-inner" />
         <h3 class="help-heading text-center mt-5 pt-5">Always here to help</h3>
         <h5 class="help-text px-5 text-center mt-3">
             We make storage easy - so give us a call, email, or contact us on live chat if you've got any questions about 
@@ -32,6 +35,13 @@
 .help-container {
     background-color: var(--bg-color);
     padding: 40px 20px;
+    position: relative;
+}
+
+.help-inner {
+    position: absolute;
+    bottom: 0;
+    right: 10px;
 }
 
 /* Heading styles */
@@ -86,6 +96,12 @@
     .help-section-inner {
         flex-direction: column;
         align-items: center;
+    }
+}
+
+@media (max-width: 1024px) {
+    .help-inner {
+        display: none;
     }
 }
 </style>

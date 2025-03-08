@@ -14,8 +14,8 @@ const steps = [
 ];
 
 const getStepClass = (stepId) => {
-  if (stepId < store.currentStep) return 'completed';
-  if (stepId === store.currentStep) return 'active';
+  if (stepId < store.step) return 'completed';
+  if (stepId === store.step) return 'active';
   return 'pending';
 };
 </script>
@@ -29,7 +29,8 @@ const getStepClass = (stepId) => {
       <p class="step-label">{{ step.label }}</p>
 
       <!-- Connecting line -->
-      <div class="line" :class="['line', getStepClass(step.id + 1)]"></div>
+      <div class="line" 
+      :class="['line', getStepClass(step.id + 1)]"></div>
     </div>
   </div>
 </template>
@@ -88,7 +89,7 @@ const getStepClass = (stepId) => {
 
 .active {
   background: white;
-  border: 4px solid var(--primary-color);
+  border: 2px solid var(--primary-color);
 }
 
 .completed {

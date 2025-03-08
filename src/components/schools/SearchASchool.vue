@@ -37,7 +37,7 @@ const filteredItems = computed(() =>
 const handleSelect = (school) => {
   schoolStore.setSchool(school); 
   searchQuery.value = school;
-  window.location.relaod();
+  window.location.reload();
 };
 
 </script>
@@ -50,25 +50,29 @@ const handleSelect = (school) => {
       @update:show="$emit('update:modelValue', $event)"
       :mask-closable="false"
     >
-      <n-card style="width: 80vh; position: relative;" >
+      <n-card style="width: 100vh; position: relative;" >
         <!-- Close Icon (Top Right) -->
         <n-icon class="close-icon" @click="$emit('update:modelValue', false)">
-          X
+          <font-awesome-icon
+                :icon="['fas', 'xmark']"
+                style="color: #a5a6a7; cursor: pointer"
+              />
         </n-icon>
 
         <template #header>
-            <h4 class="text-center">Step 1:</h4>
+            <h4 class="text-center popup-heading">Step 1:</h4>
             <n-divider></n-divider>
-          <h3 class="text-center">Search for Universities</h3>
+          <h3 class="text-center popup-heading">SEARCH FOR YOUR SCHOOL</h3>
         </template>
 
         <!-- Search Input with AutoComplete -->
         <n-auto-complete
           v-model:value="searchQuery"
           :options="filteredItems"
-          placeholder="Search here..."
+          placeholder="Find your school to see how DRM works!"
           clearable
           @select="handleSelect"
+          class="autocomplete"
         />
       </n-card>
     </n-modal>
@@ -89,5 +93,14 @@ const handleSelect = (school) => {
 
 .close-icon:hover {
   color: #ff5a5a;
+}
+.popup-heading {
+  font-weight: 700;
+  font-size: 1.9rem;
+  color: black;
+}
+.autocomplete {
+  height: 50px !important;
+  font-size: 1rem !important;
 }
 </style>

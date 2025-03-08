@@ -16,6 +16,7 @@ import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { faCircleQuestion } from "@fortawesome/free-regular-svg-icons";
 import { faFacebookF, faInstagram, faTiktok } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { faSquarePlus, faSquareMinus } from '@fortawesome/free-solid-svg-icons';
 import naive from 'naive-ui';
 
@@ -36,6 +37,7 @@ library.add(faMessage);
 library.add(faMagnifyingGlass);
 library.add(faCircleQuestion);
 library.add(faSquarePlus, faSquareMinus)
+library.add(faXmark);
 library.add(faFacebookF, faInstagram, faTiktok);
 
 const app = createApp(App)

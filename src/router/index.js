@@ -10,13 +10,19 @@ const router = createRouter({
       name: 'home',
       component: HomePage,
     },
+    // { 
+    //   path: '/landing/:school?', 
+    //   name: 'LandingWithSchool', 
+    //   component: HomePage
+    // },
     {
       path: '/checkout',
       name: 'checkout',
       component: CheckoutPage,
     },
-    
   ],
 })
 
-export default router
+
+
+export default router;

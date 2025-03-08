@@ -34,7 +34,8 @@ const showSearchASchool = () => {
       <a href="#" class="nav-top-link">Reserve your spot today!</a>
     </p>
   </div>
-  <div class="d-flex justify-content-between align-items-center p-3">
+  <div class="d-flex justify-content-between align-items-center p-3 navbar">
+    <div class="navbar-inner">
     <img
       :src="logo"
       alt="logo"
@@ -43,7 +44,7 @@ const showSearchASchool = () => {
     />
     <div
       v-if="!deviceStore.isMobile"
-      class="d-flex justify-content-center align-items-center gap-5"
+      class="d-flex justify-content-center align-items-center navbar-wrapper"
     >
       <a class="list-item" @click.prevent="showSearchASchool()">HOW IT WORKS</a>
       <a class="list-item" @click.prevent="showSearchASchool()">PRICING</a>
@@ -72,6 +73,7 @@ const showSearchASchool = () => {
       <span class="mob-phone p-2">888.769.3676</span>
       <font-awesome-icon :icon="['fas', 'bars']" size="2xl" />
     </div>
+  </div>
     <div v-if="showPopup">
       <login-popup v-model="showPopup"></login-popup>
     </div>
@@ -84,6 +86,11 @@ const showSearchASchool = () => {
 .nav-top {
   background-color: var(--primary-color);
   color: var(--light-text-color);
+  /* position: fixed; */
+  width: 100%;
+}
+.navbar-wrapper {
+  gap: 2rem;
 }
 .nav-top-p {
   margin: 0;
@@ -110,7 +117,7 @@ const showSearchASchool = () => {
 }
 .list-item {
   color: var(--grey-font-color);
-  letter-spacing: 1px;
+  letter-spacing: 0.1px;
   text-decoration: none;
   font-size: 1rem;
   font-weight: 400;
@@ -130,5 +137,26 @@ const showSearchASchool = () => {
   color: var(--secondary-color);
   font-weight: 700;
   font-size: 1rem;
+}
+.navbar-inner {
+  display: flex;
+  flex-direction: row;
+}
+@media (max-width: 1024px) {
+  .navbar-inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+.logo-style {
+  justify-self: center;
+  display: inline-block;
+  margin: auto;
+}
+}
+@media (max-width: 700px) {
+  .navbar-wrapper {
+    display: none;
+  }
 }
 </style>

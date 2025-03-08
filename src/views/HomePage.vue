@@ -13,15 +13,18 @@ import Cupon from '@/components/schools/Cupon.vue';
 import Pricing from '@/components/schools/Pricing.vue';
 import Instructions from '@/components/schools/Instructions.vue';
 import FAQs from '@/components/schools/FAQs.vue';
+import Statistics from '@/components/home/Statistics.vue';
 
 const schoolStore = useSchoolStore();
 
+
 </script>
 <template>
-    <Navbar />
-    <Header />
+    <Navbar class="navbar" />
+    <Header class="margin-header" />
     <Partners v-if="schoolStore.selectedSchool == ''" />
     <Cupon v-else />
+    <Statistics />
     <CustomizableSoln v-if="schoolStore.selectedSchool == ''" />
     <HowItWorks />
     <div v-if="schoolStore.selectedSchool == ''">
@@ -37,4 +40,11 @@ const schoolStore = useSchoolStore();
     <Footer />
 </template>
 <style scoped>
+/* .navbar {
+    position: fixed;
+    z-index: 999;
+    background: #ffff;
+    border-bottom: 1px solid gray;
+} */
+
 </style>

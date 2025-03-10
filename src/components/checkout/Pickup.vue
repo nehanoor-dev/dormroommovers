@@ -1,24 +1,43 @@
 <script setup>
-import { ref, computed } from "vue";
+import { storeToRefs } from "pinia";
+import { ref, computed, onMounted } from "vue";
+import { useCheckoutStore } from "@/stores/checkoutStore";
 
+const store = useCheckoutStore();
 // Get today's date
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
 const currentYear = ref(today.getFullYear());
 const currentMonth = ref(today.getMonth());
-const selectedDates = ref([]);
+const selectedDates = ref(store.selectedDate || []);
 const showArrivalWindow = ref(false);
 const activeArrival = ref(false);
+const selectedArrivalType = ref(null); // Stores 'flexible' or 'scheduled'
+const selectedStoreDate = ref(null); // Stores selected date
 
 // Weekday names
 const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+const timeRange = ref([
+  "07:00 to 18:00",
+  "07:00 to 18:00",
+  "07:00 to 18:00",
+  "07:00 to 18:00",
+  "07:00 to 18:00",
+  "07:00 to 18:00",
+  "07:00 to 18:00",
+  "07:00 to 18:00",
+  "07:00 to 18:00",
+]);
 // Get month name
 const getMonthName = (monthIndex) => {
   return new Date(0, monthIndex).toLocaleString("default", { month: "long" });
 };
 
+onMounted(() => {
+  console.log("selected date in store", store.selectedDate);
+});
 // Compute days for the selected month
 const daysInMonth = computed(() => {
   const days = [];
@@ -36,13 +55,33 @@ const daysInMonth = computed(() => {
     const date = new Date(currentYear.value, currentMonth.value, i);
     date.setHours(0, 0, 0, 0); // Normalize time
 
+    // if(store.selectedDate != null) {
     days.push({
       date,
-      isPast: date < today,
-      isSelected: selectedDates.value.some(
-        (d) => d.getTime() === date.getTime()
+      // isPast: date < today,
+      // isSelected: selectedDates.value.includes(date.toDateString()),
+      isSelected: store.selectedDate?.some(
+        (d) => d.toDateString() === date.toDateString()
       ),
+      isPast:
+        date < today ||
+        (store.selectedDate && date > new Date(store.selectedDate)),
     });
+    // }
+    // else {
+    //   days.push({
+    //   date,
+    //   isPast: date < today,
+    //   isSelected: selectedDates.value.includes(date.toDateString()),
+    //   // isSelected: store.selectedDate?.some(d => d.toDateString() === date.toDateString()),
+    //   // isPast: date < today || (store.selectedDate && date > new Date(store.selectedDate)),
+    // });
+    // }
+    //   days.push({
+    //   date,
+    //   isPast: date < today,
+    //   isSelected: selectedDates.value.includes(date.toDateString()),
+    // });
   }
 
   return days;
@@ -70,16 +109,38 @@ const prevMonth = () => {
 
 // Function to select a date in sequence
 const selectDate = (day) => {
-  if (!day || day.isPast) return; 
+  if (!day || day.isPast) return;
   showArrivalWindow.value = true;
-  selectedDates.value = [day.date];
+  store.selectedDate = [day.date];
+  selectedDates.value = day.date.toDateString();
+  selectedArrivalType.value = null; // Reset selection
+  selectedStoreDate.value = null; // Reset stored date
+  console.log(typeof day.date, [day.date]);
 };
 
 const activeBox = (type) => {
-    activeArrival.value = !activeArrival.value;
-    console.log("type", type)
-} 
- 
+  selectedArrivalType.value = type;
+  if (type === "flexible") {
+    selectedStoreDate.value = {
+      date: selectedDates,
+      type: "flexible",
+    };
+    store.date.push(selectedStoreDate.value);
+    console.log("selected store", selectedStoreDate.value);
+  }
+};
+
+const scheduledTime = (time) => {
+  selectedStoreDate.value = {
+    date: selectedDates,
+    time: time,
+    type: "scheduled",
+  };
+  store.date.push(selectedStoreDate.value);
+  store.totalPrice = store.totalPrice + 29;
+  console.log("selected store", selectedStoreDate.value);
+};
+
 // Show a month & year picker dropdown
 const showMonthYearPicker = ref(false);
 </script>
@@ -88,102 +149,121 @@ const showMonthYearPicker = ref(false);
   <div class="calendar">
     <h2 class="calendar-heading">Pickup Appointment</h2>
     <p class="calendar-text text-center">This is when you pickup your items.</p>
-<div class="d-flex flex-direction-row justify-content-between">
-    <div class="calendar-inner">
-    <!-- Month & Year Selector with Previous and Next Buttons -->
-    <div class="calendar-header">
-      <button @click="prevMonth" class="btn">❮</button>
-      <button
-        class="month-year-btn"
-        @click="showMonthYearPicker = !showMonthYearPicker"
-      >
-        {{ getMonthName(currentMonth) }} {{ currentYear }}
-      </button>
-      <button @click="nextMonth" class="btn">❯</button>
-    </div>
-
-    <!-- Month & Year Dropdown -->
-    <div v-if="showMonthYearPicker" class="dropdown">
-      <div class="dropdown-content">
-        <label>Month</label>
-        <select v-model="currentMonth">
-          <option v-for="(month, index) in 12" :key="index" :value="index">
-            {{ getMonthName(index) }}
-          </option>
-        </select>
-
-        <label>Year</label>
-        <select v-model="currentYear">
-          <option
-            v-for="year in [
-              today.getFullYear(),
-              today.getFullYear() + 1,
-              today.getFullYear() + 2,
-            ]"
-            :key="year"
+    <div class="d-flex flex-direction-row justify-content-between">
+      <div class="calendar-inner">
+        <!-- Month & Year Selector with Previous and Next Buttons -->
+        <div class="calendar-header">
+          <button @click="prevMonth" class="btn">❮</button>
+          <button
+            class="month-year-btn"
+            @click="showMonthYearPicker = !showMonthYearPicker"
           >
-            {{ year }}
-          </option>
-        </select>
+            {{ getMonthName(currentMonth) }} {{ currentYear }}
+          </button>
+          <button @click="nextMonth" class="btn">❯</button>
+        </div>
+
+        <!-- Month & Year Dropdown -->
+        <div v-if="showMonthYearPicker" class="dropdown">
+          <div class="dropdown-content">
+            <label>Month</label>
+            <select v-model="currentMonth">
+              <option v-for="(month, index) in 12" :key="index" :value="index">
+                {{ getMonthName(index) }}
+              </option>
+            </select>
+
+            <label>Year</label>
+            <select v-model="currentYear">
+              <option
+                v-for="year in [
+                  today.getFullYear(),
+                  today.getFullYear() + 1,
+                  today.getFullYear() + 2,
+                ]"
+                :key="year"
+              >
+                {{ year }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Weekday Headers -->
+        <div class="weekdays">
+          <div v-for="day in weekdays" :key="day" class="weekday">
+            {{ day }}
+          </div>
+        </div>
+
+        <!-- Calendar Grid -->
+        <div class="calendar-grid">
+          <div
+            v-for="(day, index) in daysInMonth"
+            :key="index"
+            class="day"
+            :class="{
+              disabled: day?.isPast,
+              selected: day?.isSelected,
+              'pickup-selected': store.step == 4 && day?.isSelected,
+            }"
+            @click="selectDate(day)"
+          >
+            <span v-if="day">{{ day.date.getDate() }}</span>
+            <span v-if="day?.isSelected" class="free-label">Free</span>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="showArrivalWindow">
+        <h5 class="calendar-sub-heading">Select an arrival window</h5>
+        <div>
+          <div
+            class="time-box"
+            @click="activeBox('flexible')"
+            :class="{ 'time-box-active': selectedArrivalType === 'flexible' }"
+          >
+            <div class="d-flex flex-direction-row justify-content-between">
+              <p class="calendar-sub-heading m-0">Flexible Arrival</p>
+              <p class="price-text m-0">Free</p>
+            </div>
+            <p class="calendar-text">
+              Receive a 3-hour arrival window the day before your appointment.
+              The earliest possible arrival is at 7 AM and the latest possible
+              arrival is at 3 PM.
+            </p>
+          </div>
+
+          <div
+            class="time-box"
+            @click="activeBox('scheduled')"
+            :class="{ 'time-box-active2': selectedArrivalType === 'scheduled' }"
+          >
+            <div class="d-flex flex-direction-row justify-content-between">
+              <p class="calendar-sub-heading m-0">Scheduled Arrival</p>
+              <p class="price-text m-0">$29</p>
+            </div>
+            <p class="calendar-text">
+              Select a set arrival window. Limited availability.
+            </p>
+          </div>
+
+          <!-- Show Scheduled Message -->
+          <div class="scheduled-container">
+            <div
+              v-if="selectedArrivalType === 'scheduled'"
+              class="scheduled-message"
+              v-for="(time, index) in timeRange"
+              :key="index"
+            >
+              <button class="scheduled-btn" @click="scheduledTime(time)">
+                {{ time }}
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-
-    <!-- Weekday Headers -->
-    <div class="weekdays">
-      <div v-for="day in weekdays" :key="day" class="weekday">{{ day }}</div>
-    </div>
-
-    <!-- Calendar Grid -->
-    <div class="calendar-grid">
-      <div
-        v-for="(day, index) in daysInMonth"
-        :key="index"
-        class="day"
-        :class="{ disabled: day?.isPast, selected: day?.isSelected }"
-        @click="selectDate(day)"
-      >
-        <span v-if="day">{{ day.date.getDate() }}</span>
-        <span v-if="day?.isSelected" class="free-label">Free</span>
-      </div>
-    </div>
-
-    <!-- Selected Dates -->
-    <div class="selected-dates">
-      <h3>Selected Dates:</h3>
-      <p v-if="selectedDates.length === 0">No dates selected</p>
-      <ul>
-        <li v-for="date in selectedDates" :key="date.getTime()">
-          {{ date.toDateString() }}
-        </li>
-      </ul>
-    </div>
-</div>
-
-<div v-if="showArrivalWindow">
-<h5 class="calendar-sub-heading">Select an arrival window</h5>
-<div>
-    <div class="time-box" @click="activeBox('flexible')" :class="{'time-box-active': activeArrival}">
-        <div class="d-flex flex-direction-row justify-content-between">
-            <p class="calendar-sub-heading m-0">Flexible Arrival</p>
-            <p class="price-text m-0">Free</p>
-        </div>
-        <p class="calendar-text">Receive a 3 hour arrival window the day before your appointment. The earliest possible arrival is at
-           7 AM and the latest possible arrival is at 3 PM.
-        </p>
-    </div>
-
-    <div class="time-box" @click="activeBox('scheduled')" :class="{'time-box-active2': activeArrival}">
-        <div class="d-flex flex-direction-row justify-content-between ">
-            <p class="calendar-sub-heading m-0">Scheduled Arrival</p>
-            <p class="price-text m-0">Free</p>
-        </div>
-        <p class="calendar-text">select a set arrival window. Limited availability.
-        </p>
-    </div>
-</div>
-</div>
-
-</div>
   </div>
 </template>
 
@@ -276,8 +356,8 @@ button:hover {
 }
 
 .day {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -298,11 +378,12 @@ button:hover {
 .day.selected {
   background: var(--primary-color);
   color: white;
+  pointer-events: none;
 }
 
 .free-label {
   position: absolute;
-  top: 22px;
+  top: 28px;
   font-size: 12px;
   color: white;
   font-weight: 600;
@@ -328,39 +409,58 @@ button:hover {
   font-weight: 700;
 }
 .calendar-text {
-    font-size: 0.7rem;
-    color: black;
-    font-weight: 400;
-    display: flex;
-    text-align: left;
+  font-size: 0.7rem;
+  color: black;
+  font-weight: 400;
+  display: flex;
+  text-align: left;
 }
 .price-text {
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: var(--primary-color);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--primary-color);
 }
 .time-box-active {
-    border: 3px solid var(--primary-color);
-    border-radius: 10px;
-    padding: 5px;
-    margin: 5px;
-    cursor: pointer;
-   background-color: #e7f7f5;
+  border: 3px solid var(--primary-color) !important;
+  border-radius: 10px;
+  padding: 5px;
+  margin: 5px;
+  cursor: pointer;
+  background-color: #e7f7f5;
 }
 .time-box-active2 {
-    border: 3px solid var(--primary-color);
-    border-radius: 10px;
-    padding: 5px;
-    margin: 5px;
-    cursor: pointer;
-   background-color: #e7f7f5;
+  border: 3px solid var(--primary-color) !important;
+  border-radius: 10px;
+  padding: 5px;
+  margin: 5px;
+  cursor: pointer;
+  background-color: #e7f7f5;
 }
 .time-box {
-    border: 1px solid rgb(213, 211, 211);
-    border-radius: 10px;
-    padding: 10px;
-    margin: 5px;
-    cursor: pointer;
+  border: 1px solid rgb(213, 211, 211);
+  border-radius: 10px;
+  padding: 10px;
+  margin: 5px;
+  cursor: pointer;
+}
+/* .scheduled-message {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2px;
+} */
+.scheduled-btn {
+  background-color: var(--primary-color);
+  font-size: 0.55rem;
+  color: black;
+  font-weight: 500;
+  border-radius: 5px;
+}
+.scheduled-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+.pickup-selected {
+  background-image: var(--secondary-color);
+  pointer-events: none;
 }
 </style>
- 

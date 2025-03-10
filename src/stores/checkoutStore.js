@@ -4,11 +4,15 @@ import { ref, computed } from 'vue';
 export const useCheckoutStore = defineStore('checkout', () => {
   const step = ref(1);
   const storage = ref([]);
-  const material = ref([]);
-  const date = ref({});
+  const material = ref({});
+  const date = ref([]);
   const totalPrice = ref(0);
   const address = ref("");
   const items = ref([]);
+  const error = ref({});
+  const selectedDate = ref(null);
+  const pickUpDate = ref(null);
+  const protectionPlan = ref([]);
   const form = ref({
     firstName: '',
     lastName: '',
@@ -22,19 +26,19 @@ export const useCheckoutStore = defineStore('checkout', () => {
 
     const nextStep = () => {
       if (step.value < 6) {
-        if (step.value == 2 && 
-          form.value.firstName == '' &&
-          form.value.lastName == '' &&
-          form.value.buildingName == '' &&
-          form.value.town == '' &&
-          form.value.address1 == '' &&
-          form.value.address2 == '' &&
-          form.value.postCode == '' 
-         )
-        {
-          console.log("step.value", step.value, !isFormValid);
-          return;
-        }
+        // if (step.value == 2 && 
+        //   form.value.firstName == '' &&
+        //   form.value.lastName == '' &&
+        //   form.value.buildingName == '' &&
+        //   form.value.town == '' &&
+        //   form.value.address1 == '' &&
+        //   form.value.address2 == '' &&
+        //   form.value.postCode == '' 
+        //  )
+        // {
+        //   console.log("step.value", step.value, !isFormValid);
+        //   return;
+        // }
         step.value++;
       }
     };
@@ -50,17 +54,37 @@ export const useCheckoutStore = defineStore('checkout', () => {
   };
 
   const removeStorage = (payload) => {
-    const storageIndex = storage.value.findIndex(item => item.id === payload.id);
-    const itemsIndex = items.value.findIndex(item => item.id === payload.id);
+    const storageIndex = storage.value.findIndex(item => item.id == payload.id);
+    const itemsIndex = items.value.findIndex(item => item.id == payload.id);
 
     if (storageIndex !== -1) {
-        totalPrice.value -= storage.value[storageIndex].price; // Adjust total price
-        storage.value.splice(storageIndex, 1); // Remove from storage
+        totalPrice.value -= storage.value[storageIndex].price; 
+        storage.value.splice(storageIndex, 1); 
     }
 
     if (itemsIndex !== -1) {
         items.value.splice(itemsIndex, 1);
     }
+};
+
+const removeProtectionPlan = (payload) => {
+  console.log(payload);
+
+  const planIndex = protectionPlan.value.findIndex(item => item.id === payload.id);
+  const itemsIndex = items.value.findIndex(item => item.id === payload.id);
+
+  if (planIndex !== -1) {
+    const planPrice = protectionPlan.value[planIndex].price; // Store price before removal
+    protectionPlan.value.splice(planIndex, 1); 
+
+    if (payload.price !== 'FREE') { 
+      totalPrice.value -= planPrice; // Use stored price
+    }
+  }
+
+  if (itemsIndex !== -1) {
+    items.value.splice(itemsIndex, 1);
+  }
 };
 
   const setMaterial = (payload) => {
@@ -110,5 +134,10 @@ export const useCheckoutStore = defineStore('checkout', () => {
     removeStorage,
     form,
     isFormValid,
+    selectedDate,
+    error,
+    pickUpDate,
+    protectionPlan,
+    removeProtectionPlan,
   };
 });

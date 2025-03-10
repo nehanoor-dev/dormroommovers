@@ -2,11 +2,18 @@
 import Storage from "@/components/checkout/Storage.vue";
 import Address from "@/components/checkout/Address.vue";
 import Pickup from "@/components/checkout/Pickup.vue";
+import Checkout from "@/components/checkout/Checkout.vue";
 import CheckoutStepper from "./../components/checkout/Stepper.vue";
 import { useCheckoutStore } from "./../stores/checkoutStore";
 import { onMounted } from "vue";
+import Material from "@/components/checkout/Material.vue";
+import ProtectionPlan from "@/components/checkout/ProtectionPlan.vue";
+import { useSchoolStore } from "@/stores/SchoolStore";
+import CheckoutItems from "@/components/checkout/CheckoutItems.vue";
+import logo from './../assets/images/header-logo.avif';
 
 const store = useCheckoutStore();
+const schoolStore = useSchoolStore();
 onMounted(() => {
   console.log("store", store.step);
   console.log("current state", store.currentState);
@@ -15,9 +22,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="checkout-container">
+  <div class="checkout-container" :class="{'checkout-container-6': store.step == 6}">
     <div class="stepper d-flex">
-      <div class="logo m-5">LOVESPACE</div>
+      <div class="logo m-5">
+        <img :src="logo" alt="logo" height="100px" />
+      </div>
       <CheckoutStepper />
     </div>
     <div class="steps-wraper">
@@ -25,8 +34,11 @@ onMounted(() => {
         <Storage v-if="store.step == 1" />
         <Address v-if="store.step == 2" />
         <Pickup v-if="store.step == 3" />
+        <Material v-if="store.step == 4" />
+        <ProtectionPlan v-if="store.step == 5" />
+        <CheckoutItems v-if="store.step == 6" />
       </div>
-      <div>
+      <div v-if="store.step != 6">
         <n-card class="checkout-card">
           <h4 class="card-heading">Due now - upfront payment</h4>
           <h4 class="card-heading">Storage per month</h4>
@@ -41,8 +53,36 @@ onMounted(() => {
             </div>
             <div>${{ item.price }}</div>
           </div>
+          <div v-if="!store.date == []">
+          <!-- <div v-if="store.date.type == 'flexible'">
+            <span class="date">Date: </span>
+            {{ store.date.date }} - {{ store.date.type }}</div> -->
+          <div class="d-flex justify-content-between" v-for="date in store.date">
+            <div>
+              <span class="card-heading">Date</span><br>
+            {{ date.date }} {{date.time}} - {{ date.type }}
+            </div>
+            <div>$29</div>
+          </div>
+        </div>
+        <div v-else> efsdscxfds</div>
+
           <div>{{ store.address }}</div>
-          <div v-if="store.totalPrice != 'FREE'" class="sub-total mb-3">
+          <div v-if="store.protectionPlan">
+            <div class="card-heading">Protection Plan</div>
+            <div v-for="plan in store.protectionPlan" :key="plan.id" class="d-flex flex-row justify-content-between">
+              <div>
+                <font-awesome-icon
+                @click="store.removeProtectionPlan(plan)"
+                :icon="['fas', 'xmark']"
+                style="color: #a5a6a7; cursor: pointer"
+              />
+
+                {{ plan.type }}</div>
+              <div>{{ plan.price }}</div>
+            </div>
+          </div>
+          <div v-if="store.totalPrice != 0" class="sub-total mb-3">
             <div>Subtotal</div>
             <div>${{ store.totalPrice }}</div>
           </div>
@@ -55,6 +95,27 @@ onMounted(() => {
             one working day prior to your collection or delivery.
           </div>
         </n-card>
+      </div>
+      <div v-else>
+        <div class="d-flex flex-direction-row">
+          <div>
+            <!-- <RouterLink>Edit</RouterLink> -->
+            <p>School:</p>
+            <h6>{{schoolStore.selectedSchool }}</h6>
+            <p>Address:</p>
+            <h6>{{ store.address }}</h6>
+          </div>
+          <div>
+            <!-- <RouterLink>Edit</RouterLink> -->
+            <p>Supply Date</p>
+            <h6>{{ store.date.date }}</h6>
+            <p>Pickup Date:</p>
+            <h6>{{ store.pickUpDate }}</h6>
+          </div>
+        </div>
+
+        <Checkout v-if="store.step == 6" />
+
       </div>
     </div>
     <div class="btn-position">
@@ -174,5 +235,12 @@ onMounted(() => {
   border-radius: 40px;
   font-weight: 700;
   cursor: pointer;
+}
+.date {
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+.checkout-container-6 {
+  background-color: rgb(246, 246, 246);
 }
 </style>

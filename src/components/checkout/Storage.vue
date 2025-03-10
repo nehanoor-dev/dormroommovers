@@ -132,6 +132,8 @@ const box = ref({
     category: "box",
     name: "Storagehotel Large Box",
     price: 20,
+    img: boxIcon,
+    
 })
 const common_items = ref([
   {
@@ -215,6 +217,7 @@ const mattress = ref([
 const counter = ref(0);
 
 const increment = () => {
+  counter.value++;
     store.setStorage(
         {
         id: box.value.id,
@@ -223,12 +226,12 @@ const increment = () => {
         quantity: counter.value,
         }
         );
-    counter.value++;
     console.log("storage", store.storage)
 }
 
 const decrement = () => {
     if(counter.value == 0) return
+    counter.value--;
     store.removeStorage(
         {
         id: box.value.id,
@@ -237,12 +240,12 @@ const decrement = () => {
         quantity: counter.value,
         }
     );
-    counter.value--;
     console.log("storage", store.items)
 }
 const commonItemsDecrement = (item) => {
     if(item.quantity == 0) return
     console.log("item", item)
+    item.quantity--;
     store.removeStorage(
         {
         id: item.id,
@@ -251,20 +254,21 @@ const commonItemsDecrement = (item) => {
         quantity: item.quantity,
         }
     );
-    item.quantity--;
+    
     console.log("storage", store.storage);
 };
 const commonItemsIncrement = (item) => {
     console.log("item", item)
+    item.quantity++;
     store.setStorage(
         {
         id: item.id,
         name: item.name, 
         price: item.price,
         quantity: item.quantity,
+        img: item.img
         }
     );
-    item.quantity++;
     console.log("storage", store.storage);
 };
 

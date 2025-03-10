@@ -240,9 +240,9 @@ const switchStyles = {
             >10% off</span
           ></span
         >
-        <router-link to="/checkout">
+        <a href="/checkout">
           <button class="primary-btn">Get Started</button>
-        </router-link>
+        </a>
       </div>
 
       <!-- Pricing Cards -->
